@@ -23,50 +23,48 @@ struct Job
 };
 */
 
-class Solution 
-{
-    public:
-          bool static comparison(Job a, Job b) {
-         return (a.profit > b.profit);
-      }
- 
-    //Function to find the maximum profit and the number of jobs done.
-    vector<int> JobScheduling(Job arr[], int n) 
-    { 
-        // your code here
-        sort(arr, arr + n, comparison);
-      int maxi = arr[0].dead;
-      for (int i = 1; i < n; i++) {
-         maxi = max(maxi, arr[i].dead);
-      }
-      
-      vector<int>vp;
-       int slot[maxi + 1];
- 
-      for (int i = 0; i <= maxi; i++)
-         slot[i] = -1;
- 
-      int countJobs = 0, jobProfit = 0;
- 
-      for (int i = 0; i < n; i++) {
-         for (int j = arr[i].dead; j > 0; j--) {
-            if (slot[j] == -1) {
-               slot[j] = i;
-               countJobs++;
-               
-               jobProfit += arr[i].profit;
-               break;
+bool compare(Job a, Job b) {
+    return a.profit > b.profit;
+}
+
+class Solution {
+public:
+    // Function to find the maximum profit and the number of jobs done.
+    vector<int> JobScheduling(Job arr[], int n) {
+        // Sort jobs by profit in descending order
+        sort(arr, arr + n, compare);
+        
+        // Find the maximum deadline
+        int max_dead = 0;
+        for (int i = 0; i < n; i++) {
+            if (arr[i].dead > max_dead) {
+                max_dead = arr[i].dead;
             }
-         }
-         
-      }
-      
-      vp.push_back(countJobs);
-      vp.push_back(jobProfit);
- 
-      return vp;
-   }
-    
+        }
+        
+        // Initialize the slots
+        vector<int> slots(max_dead + 1, -1);
+        
+        // Initialize the result variables
+        int count_jobs = 0;
+        int total_profit = 0;
+        
+        // Iterate through the jobs
+        for (int i = 0; i < n; i++) {
+            // Find a free slot for this job (the slot should be before its deadline)
+            for (int slot = arr[i].dead; slot > 0; slot--) {
+                if (slots[slot] == -1) {
+                    slots[slot] = i; // Mark this slot as occupied by job i
+                    count_jobs++;
+                    total_profit += arr[i].profit;
+                    break;
+                }
+            }
+        }
+        
+        // Return the result as a vector
+        return {count_jobs, total_profit};
+    }
 };
 
 //{ Driver Code Starts.
